@@ -22,7 +22,9 @@
                         'bounce-gentle': 'bounceGentle 2s infinite',
                         'glow-pulse': 'glowPulse 3s infinite',
                         'float': 'float 4s ease-in-out infinite',
-                        'scale-in': 'scaleIn 0.5s ease-out'
+                        'scale-in': 'scaleIn 0.5s ease-out',
+                        'modal-show': 'modalShow 0.3s ease-out',
+                        'shake': 'shake 0.5s ease-in-out'
                     }
                 }
             }
@@ -70,6 +72,17 @@
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
+
+        @keyframes modalShow {
+            from { opacity: 0; transform: scale(0.9) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
         
         .day-card {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -84,6 +97,7 @@
             background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
             border: 1px solid rgba(96, 165, 250, 0.3);
             transition: all 0.3s ease;
+            position: relative;
         }
         
         .member-tag:hover {
@@ -127,6 +141,23 @@
         .shape-2 { width: 150px; height: 150px; top: 60%; right: 10%; animation-delay: 2s; }
         .shape-3 { width: 80px; height: 80px; bottom: 20%; left: 20%; animation-delay: 4s; }
         .shape-4 { width: 120px; height: 120px; top: 30%; right: 30%; animation-delay: 1s; }
+
+        .action-buttons {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .member-tag:hover .action-buttons {
+            opacity: 1;
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.7);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-black relative overflow-x-hidden">
@@ -165,8 +196,11 @@
                         Kontak
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-400 transition-all duration-300 group-hover:w-full"></span>
                     </a>
-                    <button class="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white px-6 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25">
-                        Settings
+                    <button onclick="openAddModal()" class="bg-gradient-to-r from-green-600 to-green-400 hover:from-green-700 hover:to-green-500 text-white px-6 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-green-500/25 flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Tambah Anggota</span>
                     </button>
                 </div>
                 
@@ -187,7 +221,7 @@
                     <a href="#" class="block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-white/5 rounded-lg transition-colors">Beranda</a>
                     <a href="#" class="block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-white/5 rounded-lg transition-colors">Jadwal</a>
                     <a href="#" class="block px-3 py-2 text-gray-300 hover:text-blue-400 hover:bg-white/5 rounded-lg transition-colors">Kontak</a>
-                    <button class="w-full text-left px-3 py-2 bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-lg transition-colors">Settings</button>
+                    <button onclick="openAddModal()" class="w-full text-left px-3 py-2 bg-gradient-to-r from-green-600 to-green-400 text-white rounded-lg transition-colors">Tambah Anggota</button>
                 </div>
             </div>
         </div>
@@ -228,111 +262,8 @@
         </div>
 
         <!-- Schedule Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 mb-12">
-            <!-- Monday -->
-            <div class="day-card glass-effect rounded-3xl p-8 border border-white/10 hover:border-blue-400/50 animate-slide-up">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-white">SENIN</h3>
-                    <div class="w-14 h-14 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg animate-glow-pulse">
-                        <span class="text-white font-bold text-xl">1</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Syahdan
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Sami
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Ozan
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tuesday -->
-            <div class="day-card glass-effect rounded-3xl p-8 border border-white/10 hover:border-blue-400/50 animate-slide-up" style="animation-delay: 0.1s;">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-white">SELASA</h3>
-                    <div class="w-14 h-14 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg animate-glow-pulse" style="animation-delay: 0.5s;">
-                        <span class="text-white font-bold text-xl">2</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Aldis
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Rasvy
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Thoriq
-                    </div>
-                </div>
-            </div>
-
-            <!-- Wednesday -->
-            <div class="day-card glass-effect rounded-3xl p-8 border border-white/10 hover:border-blue-400/50 animate-slide-up" style="animation-delay: 0.2s;">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-white">RABU</h3>
-                    <div class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg animate-glow-pulse" style="animation-delay: 1s;">
-                        <span class="text-white font-bold text-xl">3</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Arfan
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Alfriza
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Nopal
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thursday -->
-            <div class="day-card glass-effect rounded-3xl p-8 border border-white/10 hover:border-blue-400/50 animate-slide-up" style="animation-delay: 0.3s;">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-white">KAMIS</h3>
-                    <div class="w-14 h-14 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg animate-glow-pulse" style="animation-delay: 1.5s;">
-                        <span class="text-white font-bold text-xl">4</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Ilham
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Ardi
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Aftori
-                    </div>
-                </div>
-            </div>
-
-            <!-- Friday -->
-            <div class="day-card glass-effect rounded-3xl p-8 border border-white/10 hover:border-blue-400/50 animate-slide-up" style="animation-delay: 0.4s;">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold text-white">JUMAT</h3>
-                    <div class="w-14 h-14 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg animate-glow-pulse" style="animation-delay: 2s;">
-                        <span class="text-white font-bold text-xl">5</span>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Hadi
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Artha
-                    </div>
-                    <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium">
-                        Mario
-                    </div>
-                </div>
-            </div>
+        <div id="schedule-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 mb-12">
+            <!-- Days will be rendered here by JavaScript -->
         </div>
 
         <!-- Rules Section -->
@@ -394,11 +325,81 @@
         </div>
     </div>
 
+    <!-- Add/Edit Member Modal -->
+    <div id="memberModal" class="fixed inset-0 z-50 hidden modal-backdrop">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="glass-effect rounded-3xl p-8 max-w-md w-full border border-white/20 animate-modal-show">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modalTitle" class="text-2xl font-bold text-white">Tambah Anggota Baru</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="memberForm" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-300 text-sm font-medium mb-2">Nama Anggota</label>
+                        <input type="text" id="memberName" class="w-full px-4 py-3 bg-slate-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all" placeholder="Masukkan nama anggota">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-300 text-sm font-medium mb-2">Pilih Hari</label>
+                        <select id="memberDay" class="w-full px-4 py-3 bg-slate-800/50 border border-gray-600 rounded-xl text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all">
+                            <option value="">Pilih hari</option>
+                            <option value="0">Senin</option>
+                            <option value="1">Selasa</option>
+                            <option value="2">Rabu</option>
+                            <option value="3">Kamis</option>
+                            <option value="4">Jumat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 font-medium">
+                            <span id="submitText">Tambah Anggota</span>
+                        </button>
+                        <button type="button" onclick="closeModal()" class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl transition-all duration-300 font-medium">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden modal-backdrop">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="glass-effect rounded-3xl p-8 max-w-md w-full border border-red-500/20 animate-modal-show">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Hapus Anggota</h3>
+                    <p class="text-gray-300 mb-6">Apakah Anda yakin ingin menghapus <span id="deleteMemberName" class="font-semibold text-red-400"></span>?</p>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="confirmDelete()" class="flex-1 bg-gradient-to-r from-red-600 to-red-400 hover:from-red-700 hover:to-red-500 text-white py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 font-medium">
+                            Ya, Hapus
+                        </button>
+                        <button onclick="closeDeleteModal()" class="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-xl transition-all duration-300 font-medium">
+                            Batal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="glass-effect border-t border-white/10 mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center">
-                <p class="text-gray-400">© 2024 Jadwal Piket Robust. Dibuat dengan ❤️ untuk kelas yang lebih bersih dan terorganisir.</p>
+                <p class="text-gray-400">© 2024 Jadwal Piket Robust – Ketegasan menjaga kebersihan adalah kunci kenyamanan.</p>
                 <div class="flex justify-center items-center space-x-4 mt-4">
                     <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
                     <div class="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
@@ -409,7 +410,202 @@
     </footer>
 
     <script>
-        // Mobile menu toggle
+        // Initial schedule data
+        let scheduleData = {
+            days: [
+                { name: 'SENIN', number: 1, color: 'from-red-500 to-pink-500', members: ['Syahdan', 'Sami', 'Ozan'] },
+                { name: 'SELASA', number: 2, color: 'from-orange-500 to-yellow-500', members: ['Aldis', 'Rasvy', 'Thoriq'] },
+                { name: 'RABU', number: 3, color: 'from-green-500 to-emerald-500', members: ['Arfan', 'Alfriza', 'Nopal'] },
+                { name: 'KAMIS', number: 4, color: 'from-blue-500 to-cyan-500', members: ['Ilham', 'Ardi', 'Aftori'] },
+                { name: 'JUMAT', number: 5, color: 'from-purple-500 to-indigo-500', members: ['Hadi', 'Artha', 'Mario'] }
+            ]
+        };
+
+        let editingMember = null;
+        let deletingMember = null;
+
+        // Render schedule function
+        function renderSchedule() {
+            const scheduleGrid = document.getElementById('schedule-grid');
+            scheduleGrid.innerHTML = '';
+
+            scheduleData.days.forEach((day, dayIndex) => {
+                const dayCard = document.createElement('div');
+                dayCard.className = 'day-card glass-effect rounded-3xl p-8 border border-white/10 hover:border-blue-400/50 animate-slide-up';
+                dayCard.style.animationDelay = `${dayIndex * 0.1}s`;
+
+                dayCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-white">${day.name}</h3>
+                        <div class="w-14 h-14 bg-gradient-to-r ${day.color} rounded-2xl flex items-center justify-center shadow-lg animate-glow-pulse" style="animation-delay: ${dayIndex * 0.5}s;">
+                            <span class="text-white font-bold text-xl">${day.number}</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        ${day.members.map((member, memberIndex) => `
+                            <div class="member-tag text-white px-5 py-3 rounded-xl text-center font-medium relative group">
+                                ${member}
+                                <div class="action-buttons flex space-x-1">
+                                    <button onclick="editMember(${dayIndex}, ${memberIndex})" class="w-7 h-7 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-110" title="Edit">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </button>
+                                    <button onclick="deleteMember(${dayIndex}, ${memberIndex})" class="w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-200 transform hover:scale-110" title="Hapus">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button onclick="addMemberToDay(${dayIndex})" class="w-full py-3 border-2 border-dashed border-gray-500 hover:border-blue-400 rounded-xl text-gray-400 hover:text-blue-400 transition-all duration-300 flex items-center justify-center space-x-2 group">
+                            <svg class="w-5 h-5 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span class="font-medium">Tambah Anggota</span>
+                        </button>
+                    </div>
+                `;
+
+                scheduleGrid.appendChild(dayCard);
+            });
+        }
+
+        // Modal functions
+        function openAddModal() {
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = 'Tambah Anggota Baru';
+            document.getElementById('submitText').textContent = 'Tambah Anggota';
+            document.getElementById('memberForm').reset();
+            editingMember = null;
+        }
+
+        function addMemberToDay(dayIndex) {
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = `Tambah Anggota - ${scheduleData.days[dayIndex].name}`;
+            document.getElementById('submitText').textContent = 'Tambah Anggota';
+            document.getElementById('memberDay').value = dayIndex;
+            document.getElementById('memberForm').reset();
+            document.getElementById('memberDay').value = dayIndex;
+            editingMember = null;
+        }
+
+        function editMember(dayIndex, memberIndex) {
+            const member = scheduleData.days[dayIndex].members[memberIndex];
+            document.getElementById('memberModal').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = 'Edit Anggota';
+            document.getElementById('submitText').textContent = 'Update Anggota';
+            document.getElementById('memberName').value = member;
+            document.getElementById('memberDay').value = dayIndex;
+            editingMember = { dayIndex, memberIndex };
+        }
+
+        function deleteMember(dayIndex, memberIndex) {
+            const member = scheduleData.days[dayIndex].members[memberIndex];
+            document.getElementById('deleteMemberName').textContent = member;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            deletingMember = { dayIndex, memberIndex };
+        }
+
+        function closeModal() {
+            document.getElementById('memberModal').classList.add('hidden');
+            editingMember = null;
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            deletingMember = null;
+        }
+
+        function confirmDelete() {
+            if (deletingMember) {
+                scheduleData.days[deletingMember.dayIndex].members.splice(deletingMember.memberIndex, 1);
+                renderSchedule();
+                showNotification('Anggota berhasil dihapus!', 'success');
+                closeDeleteModal();
+            }
+        }
+
+        // Form submission
+        document.getElementById('memberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const memberName = document.getElementById('memberName').value.trim();
+            const dayIndex = parseInt(document.getElementById('memberDay').value);
+            
+            if (!memberName) {
+                showNotification('Nama anggota tidak boleh kosong!', 'error');
+                document.getElementById('memberName').classList.add('animate-shake');
+                setTimeout(() => {
+                    document.getElementById('memberName').classList.remove('animate-shake');
+                }, 500);
+                return;
+            }
+            
+            if (dayIndex === '' || dayIndex < 0 || dayIndex > 4) {
+                showNotification('Pilih hari yang valid!', 'error');
+                return;
+            }
+
+            if (editingMember) {
+                // Update existing member
+                scheduleData.days[editingMember.dayIndex].members[editingMember.memberIndex] = memberName;
+                showNotification('Anggota berhasil diperbarui!', 'success');
+            } else {
+                // Add new member
+                scheduleData.days[dayIndex].members.push(memberName);
+                showNotification('Anggota baru berhasil ditambahkan!', 'success');
+            }
+            
+            renderSchedule();
+            closeModal();
+        });
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-500 translate-x-full`;
+            
+            if (type === 'success') {
+                notification.classList.add('bg-green-500', 'text-white');
+            } else if (type === 'error') {
+                notification.classList.add('bg-red-500', 'text-white');
+            } else {
+                notification.classList.add('bg-blue-500', 'text-white');
+            }
+            
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${type === 'success' ? 
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>' :
+                            type === 'error' ?
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>' :
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+                        }
+                    </svg>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Hide notification
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
+        // Mobile menu functionality
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const menuIcon = document.getElementById('menu-icon');
@@ -430,96 +626,112 @@
             }
         });
 
+        // Close modals when clicking outside
+        document.getElementById('memberModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('deleteModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closeDeleteModal();
+            }
+        });
+
         // Enhanced interactive effects
-        document.querySelectorAll('.member-tag').forEach((tag, index) => {
-            tag.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px) scale(1.05)';
-                this.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            });
-            
-            tag.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
+        document.addEventListener('DOMContentLoaded', function() {
+            renderSchedule();
+
+            // Parallax effect for floating shapes
+            window.addEventListener('mousemove', (e) => {
+                const shapes = document.querySelectorAll('.floating-shape');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                shapes.forEach((shape, index) => {
+                    const speed = (index + 1) * 10;
+                    const xMove = (x - 0.5) * speed;
+                    const yMove = (y - 0.5) * speed;
+                    shape.style.transform = `translate(${xMove}px, ${yMove}px)`;
+                });
             });
 
-            // Staggered animation on load
-            setTimeout(() => {
-                tag.style.animationName = 'scaleIn';
-                tag.style.animationDuration = '0.5s';
-                tag.style.animationFillMode = 'both';
-            }, index * 100);
-        });
-
-        // Day cards enhanced interaction
-        document.querySelectorAll('.day-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-15px) scale(1.02)';
-                this.style.boxShadow = '0 25px 50px rgba(96, 165, 250, 0.3), 0 0 0 1px rgba(96, 165, 250, 0.2)';
+            // Smooth scroll for better UX
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
             });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-                this.style.boxShadow = '';
-            });
-        });
 
-        // Parallax effect for floating shapes
-        window.addEventListener('mousemove', (e) => {
-            const shapes = document.querySelectorAll('.floating-shape');
-            const x = e.clientX / window.innerWidth;
-            const y = e.clientY / window.innerHeight;
-            
-            shapes.forEach((shape, index) => {
-                const speed = (index + 1) * 10;
-                const xMove = (x - 0.5) * speed;
-                const yMove = (y - 0.5) * speed;
-                shape.style.transform = `translate(${xMove}px, ${yMove}px)`;
-            });
-        });
-
-        // Smooth scroll for better UX
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Add loading animation
-        window.addEventListener('load', () => {
-            const elements = document.querySelectorAll('.animate-fade-in, .animate-slide-up');
-            elements.forEach((el, index) => {
+            // Interactive background particles
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'absolute w-1 h-1 bg-blue-400 rounded-full opacity-30';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = '100%';
+                particle.style.animation = 'float 8s linear infinite';
+                
+                document.querySelector('.floating-shapes').appendChild(particle);
+                
                 setTimeout(() => {
-                    el.classList.add('opacity-100');
-                }, index * 100);
+                    particle.remove();
+                }, 8000);
+            }
+
+            // Create particles periodically
+            setInterval(createParticle, 2000);
+
+            // Enhanced scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for scroll animations
+            document.querySelectorAll('.day-card, .glass-effect').forEach(el => {
+                observer.observe(el);
             });
         });
 
-        // Interactive background particles
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.className = 'absolute w-1 h-1 bg-blue-400 rounded-full opacity-30';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = '100%';
-            particle.style.animation = 'float 8s linear infinite';
-            
-            document.querySelector('.floating-shapes').appendChild(particle);
-            
-            setTimeout(() => {
-                particle.remove();
-            }, 8000);
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDeleteModal();
+            }
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                openAddModal();
+            }
+        });
+
+        // Data persistence (using memory storage as per requirements)
+        function saveScheduleData() {
+            // In a real application, this would save to a backend
+            console.log('Schedule data saved:', scheduleData);
         }
 
-        // Create particles periodically
-        setInterval(createParticle, 2000);
+        // Auto-save functionality
+        setInterval(saveScheduleData, 30000); // Save every 30 seconds
 
-        // Add click effects to cards
-        document.querySelectorAll('.day-card, .member-tag').forEach(element => {
+        // Add ripple effect to buttons
+        function addRippleEffect(element) {
             element.addEventListener('click', function(e) {
                 const ripple = document.createElement('div');
                 const rect = this.getBoundingClientRect();
@@ -530,35 +742,23 @@
                 ripple.style.width = ripple.style.height = size + 'px';
                 ripple.style.left = x + 'px';
                 ripple.style.top = y + 'px';
-                ripple.className = 'absolute bg-blue-400 opacity-30 rounded-full pointer-events-none transform scale-0 animate-ping';
+                ripple.className = 'absolute bg-white opacity-20 rounded-full pointer-events-none transform scale-0 animate-ping';
                 
                 this.style.position = 'relative';
                 this.style.overflow = 'hidden';
                 this.appendChild(ripple);
                 
                 setTimeout(() => {
-                    ripple.remove();
+                    if (ripple.parentNode) {
+                        ripple.remove();
+                    }
                 }, 600);
             });
-        });
+        }
 
-        // Enhanced scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-fade-in');
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements for scroll animations
-        document.querySelectorAll('.day-card, .glass-effect').forEach(el => {
-            observer.observe(el);
+        // Apply ripple effect to all buttons after DOM load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('button').forEach(addRippleEffect);
         });
     </script>
 </body>
